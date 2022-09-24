@@ -9,7 +9,7 @@ class Database:
     def get_list_events_by_college(self, college_name: str):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list').get()
 
-        return {'events': [event.to_dict() for event in list_of_events_doc]}
+        return {'events': [{'id': event.id, **event.to_dict()} for event in list_of_events_doc]}
 
     def create_event_in_college(self, college_name: str, **kwargs):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list')
@@ -48,7 +48,7 @@ class Database:
     def get_collaborators_by_college(self, college_name: str):
         list_of_collaborators_doc = self._client.collection('collaborators').document(college_name).collection('list').get()
 
-        return {'list': list_of_collaborators_doc.to_dict()}
+        return {'collaborators': [collab.id for collab in list_of_collaborators_doc]}
 
     def add_heartbeat_to_event(self, uid: str, id: str):
         attendance_ref = self._client.collection('attendance').document(id).get()
@@ -93,4 +93,4 @@ class Database:
     def get_users_in_college(self, college_name: str):
         list_of_users_doc = self._client.collection('users').where('affiliation', '==', college_name).get()
 
-        return {'users': list_of_users_doc}
+        return {'users': [{'id': user.id, **user.to_dict()} for user in list_of_users_doc]}
