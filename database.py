@@ -9,7 +9,7 @@ class Database:
     def get_list_events_by_college(self, college_name: str):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list').get()
 
-        return {'events': list_of_events_doc}
+        return {'events': [event.to_dict() for event in list_of_events_doc]}
 
     def create_event_in_college(self, college_name: str, **kwargs):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list')
