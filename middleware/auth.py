@@ -32,6 +32,6 @@ def auth_required(f):
             uid = decoded_token['uid']
 
             return f(uid, *args, **kwargs)
-        except Exception:
-            return make_response(jsonify({'error': 'Invalid authentication.'}), 401)
+        except Exception as e:
+            return make_response(jsonify({'error': e}), 401)
     return decorator
