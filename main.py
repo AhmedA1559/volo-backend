@@ -22,7 +22,7 @@ initialize_app(
 )
 app.config['db'] = Database()
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def index():
     return jsonify({}), 200
 
