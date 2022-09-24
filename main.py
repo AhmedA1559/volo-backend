@@ -6,7 +6,6 @@ from database import Database
 from middleware.auth import auth_required
 
 app = Flask(__name__)
-app.config['db'] = Database()
 initialize_app(
     credential=credentials.Certificate({
         "type": os.environ.get('type'),
@@ -21,7 +20,7 @@ initialize_app(
         "client_x509_cert_url": os.environ.get('client_x509_cert_url')}
     )
 )
-
+app.config['db'] = Database()
 
 @app.route('/')
 def index():
