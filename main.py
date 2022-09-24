@@ -39,7 +39,7 @@ def events_by_college(uid, college_name):
             return jsonify({'error': 'You do not have the permission to create this.'}), 401
 
 
-@app.route('/events/<college_name>/<id>', methods=['PUT, DELETE'])
+@app.route('/events/<college_name>/<id>')
 @auth_required
 def update_event_in_college(uid, college_name, id):
     if request.method == 'PUT':
@@ -56,13 +56,13 @@ def update_event_in_college(uid, college_name, id):
             return jsonify({'error': 'You do not have the permission to delete this.'}), 401
 
 
-@app.route('/collaborators/<college_name>', methods=['GET'])
+@app.route('/collaborators/<college_name>')
 @auth_required
 def get_list_collaborators_by_college(uid, college_name):
     return jsonify(app.config['db'].get_collaborators_by_college(college_name)), 200
 
 
-@app.route('/users/<uid>', methods=['GET, PUT'])
+@app.route('/users/<uid>')
 @auth_required
 def get_user_by_uid(auth_uid, user_uid):
     if request.method == 'GET':
@@ -75,7 +75,7 @@ def get_user_by_uid(auth_uid, user_uid):
             return jsonify({'error': 'You do not have the permission to update this.'}), 401
 
 
-@app.route('/attendance/<id>', methods=['GET, POST', 'PUT', 'DELETE'])
+@app.route('/attendance/<id>')
 @auth_required
 def attendance_by_event(uid, id):
     if request.method == 'GET':
