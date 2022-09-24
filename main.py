@@ -25,6 +25,21 @@ app.config['db'] = Database()
 @app.route('/events/<college_name>')
 @auth_required
 def events_by_college(uid, college_name):
+    if 'event_id' in request.args:
+        event_id = request.args['event_id']
+        if request.method == 'PUT':
+            if app.config['db'].is_collaborator_by_uid(uid, college_name):
+                app.config['db'].update_event_in_college(college_name, event_id, **request.json)
+                return jsonify({}), 200
+            else:
+                return jsonify({'error': 'You do not have the permission to update this.'}), 401
+        elif request.method == 'DELETE':
+            if app.config['db'].is_collaborator_by_uid(uid, college_name):
+                app.config['db'].delete_event_in_college(college_name, event_id)
+                return jsonify({}), 200
+            else:
+                return jsonify({'error': 'You do not have the permission to delete this.'}), 401
+
     if request.method == 'GET':
         return jsonify(app.config['db'].get_list_events_by_college(college_name)), 200
     elif request.method == 'POST':
@@ -32,24 +47,6 @@ def events_by_college(uid, college_name):
             return jsonify({'created_id': app.config['db'].create_event_in_college(college_name, **request.json)}), 200
         else:
             return jsonify({'error': 'You do not have the permission to create this.'}), 401
-    return jsonify({}), 405
-
-
-@app.route('/events/<college_name>/<id>')
-@auth_required
-def update_event_in_college(uid, college_name, id):
-    if request.method == 'PUT':
-        if app.config['db'].is_collaborator_by_uid(uid, college_name):
-            app.config['db'].update_event_in_college(college_name, id, **request.json)
-            return jsonify({}), 200
-        else:
-            return jsonify({'error': 'You do not have the permission to update this.'}), 401
-    elif request.method == 'DELETE':
-        if app.config['db'].is_collaborator_by_uid(uid, college_name):
-            app.config['db'].delete_event_in_college(college_name, id)
-            return jsonify({}), 200
-        else:
-            return jsonify({'error': 'You do not have the permission to delete this.'}), 401
     return jsonify({}), 405
 
 
