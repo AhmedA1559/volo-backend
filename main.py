@@ -2,8 +2,10 @@ from flask import Flask, jsonify
 from firebase_admin import credentials, firestore, initialize_app
 import os
 
-app = Flask(__name__)
+from database import Database
 
+app = Flask(__name__)
+app.config['db'] = Database()
 initialize_app(
     credential=credentials.Certificate({
         "type": os.environ.get('type'),
@@ -19,13 +21,9 @@ initialize_app(
     )
 )
 
-db = firestore.client()
-db_ref = db.collection('events')
-
 
 @app.route('/')
 def index():
-    db_ref.document('test').set({'test': 'test'})
     return jsonify({"payload": db_ref.document('test').get().to_dict()}), 200
 
 
