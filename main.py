@@ -27,35 +27,54 @@ initialize_app(
 def index():
     return jsonify({}), 200
 
-@app.route('/events/<college_name>', methods=['GET'])
-def get_list_events_by_college(college_name):
-    return jsonify(app.config['db'].get_list_events_by_college(college_name)), 200
 
-@app.route('/events/<college_name>', methods=['POST'])
+@app.route('/events/<college_name>', methods=['GET, POST'])
 @auth_required
-def create_event_in_college(uid, college_name):
-    if (app.config['db'].is_collaborator_by_uid(uid, college_name)):
-        return jsonify({'created_id': app.config['db'].create_event_in_college(college_name, **request.json)}), 200
-    else:
-        return jsonify({'error': 'You do not have the permission to create this.'}), 401
+def events_by_college(college_name):
+    if request.method == 'GET':
+        return jsonify(app.config['db'].get_list_events_by_college(college_name)), 200
+    elif request.method == 'POST':
+        if app.config['db'].is_collaborator_by_uid(uid, college_name):
+            return jsonify({'created_id': app.config['db'].create_event_in_college(college_name, **request.json)}), 200
+        else:
+            return jsonify({'error': 'You do not have the permission to create this.'}), 401
 
-@app.route('/events/<college_name>/<id>', methods=['PUT'])
+
+@app.route('/events/<college_name>/<id>', methods=['PUT, DELETE'])
 @auth_required
 def update_event_in_college(uid, college_name, id):
-    if (app.config['db'].is_collaborator_by_uid(uid, college_name)):
-        app.config['db'].update_event_in_college(college_name, id, **request.json)
-        return jsonify({}), 200
-    else:
-        return jsonify({'error': 'You do not have the permission to update this.'}), 401
+    if request.method == 'PUT':
+        if app.config['db'].is_collaborator_by_uid(uid, college_name):
+            app.config['db'].update_event_in_college(college_name, id, **request.json)
+            return jsonify({}), 200
+        else:
+            return jsonify({'error': 'You do not have the permission to update this.'}), 401
+    elif request.method == 'DELETE':
+        if app.config['db'].is_collaborator_by_uid(uid, college_name):
+            app.config['db'].delete_event_in_college(college_name, id)
+            return jsonify({}), 200
+        else:
+            return jsonify({'error': 'You do not have the permission to delete this.'}), 401
 
-@app.route('/events/<college_name>/<id>', methods=['DELETE'])
+
+@app.route('/collaborators/<college_name>', methods=['GET'])
 @auth_required
-def delete_event_in_college(uid, college_name, id):
-    if (app.config['db'].is_collaborator_by_uid(uid, college_name)):
-        app.config['db'].delete_event_in_college(college_name, id)
-        return jsonify({}), 200
-    else:
-        return jsonify({'error': 'You do not have the permission to delete this.'}), 401
+def get_list_collaborators_by_college(uid, college_name):
+    return jsonify(app.config['db'].get_collaborators_by_college(college_name)), 200
+
+
+@app.route('/users/<uid>', methods=['GET, PUT'])
+@auth_required
+def get_user_by_uid(auth_uid, user_uid):
+    if request.method == 'GET':
+        return jsonify(app.config['db'].get_user(user_uid)), 200
+    elif request.method == 'PUT':
+        if auth_uid == user_uid:
+            app.config['db'].update_user_affiliation(user_uid, request.json['affiliation'])
+            return jsonify({}), 200
+        else:
+            return jsonify({'error': 'You do not have the permission to update this.'}), 401
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
