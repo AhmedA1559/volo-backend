@@ -22,11 +22,6 @@ initialize_app(
 )
 app.config['db'] = Database()
 
-@app.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def index():
-    return jsonify({}), 200
-
-
 @app.route('/events/<college_name>')
 @auth_required
 def events_by_college(uid, college_name):
