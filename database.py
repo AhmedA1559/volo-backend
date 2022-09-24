@@ -18,7 +18,7 @@ class Database:
     def create_event_in_college(self, college_name: str, **kwargs):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list')
         # if the document doesn't exist, create it
-        list_of_events_doc.add(kwargs)
+        return list_of_events_doc.add(kwargs)
 
     def update_event_in_college(self, college_name: str, id: str, **kwargs):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list')
@@ -40,3 +40,11 @@ class Database:
     def update_user_by_uid(self, uid: str, **kwargs):
         user_doc = self._client.collection('users').document(uid)
         user_doc.update(kwargs)
+
+    def is_collaborator_by_uid(self, uid: str, college_name: str):
+        user_doc = self._client.collection('users').document(uid).get()
+
+        if user_doc.exists:
+            return college_name in user_doc.to_dict()['collaborator']
+        else:
+            raise Exception("Could not find the given user.")
