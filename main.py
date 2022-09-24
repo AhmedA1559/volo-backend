@@ -27,7 +27,7 @@ def index():
     return jsonify({}), 200
 
 
-@app.route('/events/<college_name>', methods=['GET, POST'])
+@app.route('/events/<college_name>')
 @auth_required
 def events_by_college(uid, college_name):
     if request.method == 'GET':
