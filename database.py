@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from firebase_admin import firestore
 
+from model import Attendance
 
 class Database:
     def __init__(self):
@@ -10,10 +9,7 @@ class Database:
     def get_list_events_by_college(self, college_name: str):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list').get()
 
-        if list_of_events_doc.exists:
-            return list_of_events_doc.to_dict()
-        else:
-            raise Exception("Could not find the given college's list. Perhaps it isn't a valid college?")
+        return {'events': list_of_events_doc}
 
     def create_event_in_college(self, college_name: str, **kwargs):
         list_of_events_doc = self._client.collection('events').document(college_name).collection('list')
@@ -52,7 +48,49 @@ class Database:
     def get_collaborators_by_college(self, college_name: str):
         list_of_collaborators_doc = self._client.collection('collaborators').document(college_name).collection('list').get()
 
-        if list_of_collaborators_doc.exists:
-            return list_of_collaborators_doc.to_dict()
+        return {'list': list_of_collaborators_doc.to_dict()}
+
+    def add_heartbeat_to_event(self, uid: str, id: str):
+        attendance_ref = self._client.collection('attendance').document(id).get()
+
+        if attendance_ref.exists:
+            attendance = Attendance.from_dict(attendance_ref.to_dict())
+            attendance.add_heartbeat(uid)
+            self._client.collection('attendance').document(id).set(attendance.to_dict())
         else:
-            raise Exception("Could not find the given college's list. Perhaps it isn't a valid college?")
+            attendance = Attendance().add_heartbeat(uid)
+            self._client.collection('attendance').document(id).set(attendance.to_dict())
+
+    def add_attending_to_event(self, uid: str, id: str):
+        attendance_ref = self._client.collection('attendance').document(id).get()
+
+        if attendance_ref.exists:
+            attendance = Attendance.from_dict(attendance_ref.to_dict())
+            attendance.add_attending(uid)
+            self._client.collection('attendance').document(id).set(attendance.to_dict())
+        else:
+            attendance = Attendance().add_attending(uid)
+            self._client.collection('attendance').document(id).set(attendance.to_dict())
+
+    def remove_attending_from_event(self, uid: str, id: str):
+        attendance_ref = self._client.collection('attendance').document(id).get()
+
+        if attendance_ref.exists:
+            attendance = Attendance.from_dict(attendance_ref.to_dict())
+            attendance.remove_attending(uid)
+            self._client.collection('attendance').document(id).set(attendance.to_dict())
+        else:
+            raise Exception("Could not find the given event.")
+
+    def get_attendance_by_event(self, id: str):
+        attendance_ref = self._client.collection('attendance').document(id).get()
+
+        if attendance_ref.exists:
+            return attendance_ref.to_dict()
+        else:
+            raise Attendance().to_dict()
+
+    def get_users_in_college(self, college_name: str):
+        list_of_users_doc = self._client.collection('users').where('affiliation', '==', college_name).get()
+
+        return {'users': list_of_users_doc}

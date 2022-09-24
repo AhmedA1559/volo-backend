@@ -75,5 +75,22 @@ def get_user_by_uid(auth_uid, user_uid):
             return jsonify({'error': 'You do not have the permission to update this.'}), 401
 
 
+@app.route('/attendance/<id>', methods=['GET, POST', 'PUT', 'DELETE'])
+@auth_required
+def attendance_by_event(uid, id):
+    if request.method == 'GET':
+        return jsonify(app.config['db'].get_attendance_by_event(id)), 200
+    elif request.method == 'POST':
+        app.config['db'].add_attending(uid, id)
+        return jsonify({}), 200
+    elif request.method == 'PUT':
+        app.config['db'].add_heartbeat(uid, id)
+        return jsonify({}), 200
+    elif request.method == 'DELETE':
+        app.config['db'].remove_attending(uid, id)
+        return jsonify({}), 200
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
