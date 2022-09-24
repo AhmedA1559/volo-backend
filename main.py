@@ -37,6 +37,7 @@ def events_by_college(uid, college_name):
             return jsonify({'created_id': app.config['db'].create_event_in_college(college_name, **request.json)}), 200
         else:
             return jsonify({'error': 'You do not have the permission to create this.'}), 401
+    return jsonify({}), 405
 
 
 @app.route('/events/<college_name>/<id>')
@@ -54,6 +55,7 @@ def update_event_in_college(uid, college_name, id):
             return jsonify({}), 200
         else:
             return jsonify({'error': 'You do not have the permission to delete this.'}), 401
+    return jsonify({}), 405
 
 
 @app.route('/collaborators/<college_name>')
@@ -73,6 +75,7 @@ def get_user_by_uid(auth_uid, user_uid):
             return jsonify({}), 200
         else:
             return jsonify({'error': 'You do not have the permission to update this.'}), 401
+    return jsonify({}), 405
 
 
 @app.route('/attendance/<id>')
@@ -89,7 +92,7 @@ def attendance_by_event(uid, id):
     elif request.method == 'DELETE':
         app.config['db'].remove_attending(uid, id)
         return jsonify({}), 200
-
+    return jsonify({}), 405
 
 
 if __name__ == '__main__':
