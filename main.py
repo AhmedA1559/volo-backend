@@ -27,7 +27,7 @@ initialize_app(
 app.config['db'] = Database()
 
 @app.route('/events/<college_name>', methods=['GET', 'POST', 'DELETE', 'PUT'])
-@auth_required
+#@auth_required
 def events_by_college(uid, college_name):
     if 'event_id' in request.args:
         event_id = request.args['event_id']
@@ -55,13 +55,13 @@ def events_by_college(uid, college_name):
 
 
 @app.route('/collaborators/<college_name>')
-@auth_required
+#@auth_required
 def get_list_collaborators_by_college(uid, college_name):
     return jsonify(app.config['db'].get_collaborators_by_college(college_name)), 200
 
 
 @app.route('/users/<uid>', methods=['GET', 'PUT'])
-@auth_required
+#@auth_required
 def get_user_by_uid(auth_uid, user_uid):
     if request.method == 'GET':
         return jsonify(app.config['db'].get_user(user_uid)), 200
@@ -75,7 +75,7 @@ def get_user_by_uid(auth_uid, user_uid):
 
 
 @app.route('/attendance/<id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
-@auth_required
+#@auth_required
 def attendance_by_event(uid, id):
     if request.method == 'GET':
         return jsonify(app.config['db'].get_attendance_by_event(id)), 200
@@ -91,7 +91,7 @@ def attendance_by_event(uid, id):
     return jsonify({}), 405
 
 @app.route('/colleges/<college_name>/leaderboard')
-@auth_required
+#@auth_required
 def get_leaderboard_by_college(uid, college_name):
     return jsonify(app.config['db'].get_users_in_college(college_name)), 200
 
