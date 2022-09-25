@@ -22,7 +22,7 @@ initialize_app(
 )
 app.config['db'] = Database()
 
-@app.route('/events/<college_name>')
+@app.route('/events/<college_name>', methods=['GET', 'POST', 'DELETE', 'PUT'])
 @auth_required
 def events_by_college(uid, college_name):
     if 'event_id' in request.args:
@@ -56,7 +56,7 @@ def get_list_collaborators_by_college(uid, college_name):
     return jsonify(app.config['db'].get_collaborators_by_college(college_name)), 200
 
 
-@app.route('/users/<uid>')
+@app.route('/users/<uid>', methods=['GET', 'PUT'])
 @auth_required
 def get_user_by_uid(auth_uid, user_uid):
     if request.method == 'GET':
@@ -70,7 +70,7 @@ def get_user_by_uid(auth_uid, user_uid):
     return jsonify({}), 405
 
 
-@app.route('/attendance/<id>')
+@app.route('/attendance/<id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
 @auth_required
 def attendance_by_event(uid, id):
     if request.method == 'GET':
