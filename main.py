@@ -2,10 +2,14 @@ from flask import Flask, jsonify, request
 from firebase_admin import credentials, firestore, initialize_app
 import os
 
+from flask_cors import CORS, cross_origin
+
 from database import Database
 from middleware.auth import auth_required
 
 app = Flask(__name__)
+CORS(app)
+
 initialize_app(
     credential=credentials.Certificate({
         "type": os.environ.get('type'),
