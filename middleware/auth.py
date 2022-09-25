@@ -33,5 +33,5 @@ def auth_required(f):
 
             return f(uid, *args, **kwargs)
         except Exception as e:
-            return make_response(jsonify({'error': e}), 401)
+            return make_response(jsonify({'error': str(e)}), 401)
     return decorator
