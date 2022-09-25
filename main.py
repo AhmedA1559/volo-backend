@@ -86,6 +86,10 @@ def attendance_by_event(uid, id):
         return jsonify({}), 200
     return jsonify({}), 405
 
+@app.route('/colleges/<college_name>/leaderboard')
+@auth_required
+def get_leaderboard_by_college(uid, college_name):
+    return jsonify(app.config['db'].get_users_in_college(college_name)), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
