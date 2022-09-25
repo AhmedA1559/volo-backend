@@ -28,7 +28,8 @@ app.config['db'] = Database()
 
 @app.route('/events/<college_name>', methods=['GET', 'POST', 'DELETE', 'PUT'])
 #@auth_required
-def events_by_college(uid, college_name):
+def events_by_college(college_name):
+    uid = request.args['uid']
     if 'event_id' in request.args:
         event_id = request.args['event_id']
         if request.method == 'PUT':
@@ -56,17 +57,18 @@ def events_by_college(uid, college_name):
 
 @app.route('/collaborators/<college_name>')
 #@auth_required
-def get_list_collaborators_by_college(uid, college_name):
+def get_list_collaborators_by_college(college_name):
     return jsonify(app.config['db'].get_collaborators_by_college(college_name)), 200
 
 
 @app.route('/users/<uid>', methods=['GET', 'PUT'])
 #@auth_required
-def get_user_by_uid(auth_uid, user_uid):
+def get_user_by_uid(user_uid):
+    uid = request.args['uid']
     if request.method == 'GET':
         return jsonify(app.config['db'].get_user(user_uid)), 200
     elif request.method == 'PUT':
-        if auth_uid == user_uid:
+        if uid == user_uid:
             app.config['db'].update_user_affiliation(user_uid, request.json['affiliation'])
             return jsonify({}), 200
         else:
@@ -76,7 +78,8 @@ def get_user_by_uid(auth_uid, user_uid):
 
 @app.route('/attendance/<id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
 #@auth_required
-def attendance_by_event(uid, id):
+def attendance_by_event(id):
+    uid = request.args['uid']
     if request.method == 'GET':
         return jsonify(app.config['db'].get_attendance_by_event(id)), 200
     elif request.method == 'POST':
@@ -92,7 +95,7 @@ def attendance_by_event(uid, id):
 
 @app.route('/colleges/<college_name>/leaderboard')
 #@auth_required
-def get_leaderboard_by_college(uid, college_name):
+def get_leaderboard_by_college(college_name):
     return jsonify(app.config['db'].get_users_in_college(college_name)), 200
 
 if __name__ == '__main__':
