@@ -91,6 +91,6 @@ class Database:
             raise Attendance().to_dict()
 
     def get_users_in_college(self, college_name: str):
-        list_of_users_doc = self._client.collection('users').where('affiliation', '==', college_name).order_by("hours").get()
+        list_of_users_doc = self._client.collection('users').where('affiliation', '==', college_name).get()
 
         return {'users': [{'id': user.id, **user.to_dict()} for user in list_of_users_doc]}
