@@ -45,7 +45,7 @@ def events_by_college(college_name):
         return jsonify(app.config['db'].get_list_events_by_college(college_name)), 200
     elif request.method == 'POST':
         #if app.config['db'].is_collaborator_by_uid(uid, college_name):
-        return jsonify({'created_id': app.config['db'].create_event_in_college(college_name, **request.json)}), 200
+        return jsonify({'created_id': app.config['db'].create_event_in_college(college_name, **request.json).id}), 200
         #else:
             #return jsonify({'error': 'You do not have the permission to create this.'}), 401
     return jsonify({}), 405
